@@ -10,6 +10,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src", "prisma/**/*.ts"],
+  "include": ["src", "api", "prisma/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
