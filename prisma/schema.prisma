@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum roles {
+  user
+  merchant
+  super_admin
+}
+
+model users {
+  id            String            @id @unique @default(uuid()) @db.Uuid
+  email         String            @unique
+  password      String
+  total_point   Int               @default(0)
+  role          roles             @default(user)
+  created_at    DateTime          @default(now())
+  updated_at    DateTime          @updatedAt
+  nik           String?
+  identity_card String?
+  // Relations
+  merchants     merchants[]
+  points        points[]
+  stocks        stocks[]
+  followers     followers[]
+  ratings       merchant_rating[]
+}
+
+model points {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  amount     Int
+  expires_in DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model merchants {
+  id              String   @id @default(uuid()) @db.Uuid
+  user_id         String   @db.Uuid
+  name            String
+  type            String
+  location        String
+  description     String
+  profile_photo   String // single profile photo URL
+  banner_img      String // banner image URL
+  gallery_photo   String // legacy single gallery photo (will be deprecated)
+  profilePhotoUrl String? // new field for clearer naming (optional)
+  bannerImageUrl  String? // new optional banner naming
+  galleryImages   Json? // array of gallery image URLs stored as JSON
+  restricted      Boolean? @default(false)
+  verified        Boolean? @default(false)
+  total_follower  Int?     @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  latitude        Float?
+  longitude       Float?
+
+  // Relations
+  user         users             @relation(fields: [user_id], references: [id])
+  stocks       stocks[]
+  ratings      merchant_rating[]
+  followers    followers[]
+  selledStocks selled_stocks[]
+}
+
+model followers {
+  id          String   @id @default(uuid()) @db.Uuid
+  user_id     String   @db.Uuid
+  merchant_id String   @db.Uuid
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  user     users     @relation(fields: [user_id], references: [id])
+  merchant merchants @relation(fields: [merchant_id], references: [id])
+
+  @@unique([user_id, merchant_id]) // opsional: cegah follow duplikat
+}
+
+model stock_rating {
+  id         String   @id @default(uuid()) @db.Uuid
+  stock_id   String   @db.Uuid
+  rate       Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  stock stocks @relation(fields: [stock_id], references: [id])
+}
+
+model merchant_rating {
+  id          String @id @default(uuid()) @db.Uuid
+  user_id     String @db.Uuid
+  rate        Int
+  comment     String
+  merchant_id String @db.Uuid
+
+  photo_url  String? // [null] => opsional
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user     users     @relation(fields: [user_id], references: [id])
+  merchant merchants @relation(fields: [merchant_id], references: [id])
+}
+
+model stocks {
+  id          String @id @default(uuid()) @db.Uuid
+  user_id     String @db.Uuid
+  merchant_id String @db.Uuid
+  name        String
+  quantity    Int
+  photo_url   String
+  price       Int
+
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  // Relations
+  user        users          @relation(fields: [user_id], references: [id])
+  merchant    merchants      @relation(fields: [merchant_id], references: [id])
+  stockRating stock_rating[]
+}
+
+model selled_stocks {
+  id          String @id @default(uuid()) @db.Uuid
+  stock_id    String @db.Uuid
+  quantity    Int
+  total_price Float
+  merchant_id String @db.Uuid
+  user_id     String @db.Uuid
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  // Relations
+  merchant   merchants @relation(fields: [merchant_id], references: [id])
+}
