@@ -3,7 +3,8 @@
     "dev": "nodemon --watch src --exec ts-node src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "vercel-build": "prisma generate && tsc"
+    "vercel-build": "prisma generate && tsc",
+    "postinstall": "prisma generate"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
