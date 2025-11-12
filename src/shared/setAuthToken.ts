@@ -11,8 +11,9 @@ const setAuthToken = (userId: string, res: Response) => {
   const isProd = process.env.NODE_ENV === "production";
   res.cookie("token", token, {
     httpOnly: true,
-    secure: isProd, // allow HTTP in local dev
-    sameSite: isProd ? "strict" : "lax", // enable cross-site cookie on localhost
+    secure: true, // allow HTTP in local dev
+    sameSite: "none", // enable cross-site cookie on localhost
+    path: "/",
   });
 };
 
