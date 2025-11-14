@@ -36,6 +36,11 @@ export const addMerchantService = async (payload: {
   return newMerchant;
 };
 
+export const getAllMerchantService = async () => {
+  const merchants = await prisma.merchants.findMany();
+  return merchants;
+};
+
 export const getMerchantByIdService = async (merchant_id: string) => {
   const merchant = await prisma.merchants.findUnique({
     where: {
@@ -68,4 +73,17 @@ export const addMerchantRatingService = async (
   });
 
   return merchant_rating;
+};
+
+export const getUserMerchantService = async (user_id: string) => {
+  const merchant = await prisma.merchants.findMany({
+    where: { user_id },
+    select: {
+      id: true,
+      name: true,
+      user_id: true,
+      profilePhotoUrl: true,
+    },
+  });
+  return merchant;
 };
