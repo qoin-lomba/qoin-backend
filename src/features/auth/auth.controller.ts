@@ -68,3 +68,25 @@ export const getUser = async (
     next(err);
   }
 };
+
+export const logoutAccount = async (
+  req: AuthRequest,
+  res: Response<APIResponse>,
+  next: NextFunction
+) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({
+      message: "Logout successful",
+      status: "success",
+    });
+  } catch (err) {
+    next(err);
+    console.error(err);
+  }
+};
