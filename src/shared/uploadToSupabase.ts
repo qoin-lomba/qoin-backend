@@ -1,5 +1,5 @@
 import supabaseClient from "../database/supabaseClient";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 
 export const uploadToSupabase = async (
   file: Express.Multer.File,
@@ -7,7 +7,7 @@ export const uploadToSupabase = async (
 ) => {
   const bucket = "merchant-media";
   const ext = file.originalname.split(".").pop() || "bin";
-  const path = `${prefix}/${uuidv4()}.${ext}`;
+  const path = `${prefix}/${randomUUID()}.${ext}`;
   const { error } = await supabaseClient.storage
     .from(bucket)
     .upload(path, file.buffer, {
