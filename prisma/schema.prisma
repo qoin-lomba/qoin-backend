@@ -21,7 +21,7 @@ enum roles {
 }
 
 model users {
-  id            String            @id @unique @default(uuid()) @db.Uuid
+  id            String            @id @unique @default(uuid())
   email         String            @unique
   password      String
   total_point   Int               @default(0)
@@ -39,8 +39,8 @@ model users {
 }
 
 model points {
-  id         String   @id @default(uuid()) @db.Uuid
-  user_id    String   @db.Uuid
+  id         String   @id @default(uuid())
+  user_id    String
   amount     Int
   expires_in DateTime
   created_at DateTime @default(now())
@@ -51,8 +51,8 @@ model points {
 }
 
 model merchants {
-  id              String   @id @default(uuid()) @db.Uuid
-  user_id         String   @db.Uuid
+  id              String   @id @default(uuid())
+  user_id         String
   name            String
   type            String
   location        String
@@ -80,9 +80,9 @@ model merchants {
 }
 
 model followers {
-  id          String   @id @default(uuid()) @db.Uuid
-  user_id     String   @db.Uuid
-  merchant_id String   @db.Uuid
+  id          String   @id @default(uuid())
+  user_id     String
+  merchant_id String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -94,8 +94,8 @@ model followers {
 }
 
 model stock_rating {
-  id         String   @id @default(uuid()) @db.Uuid
-  stock_id   String   @db.Uuid
+  id         String   @id @default(uuid())
+  stock_id   String
   rate       Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -105,11 +105,11 @@ model stock_rating {
 }
 
 model merchant_rating {
-  id          String @id @default(uuid()) @db.Uuid
-  user_id     String @db.Uuid
+  id          String @id @default(uuid())
+  user_id     String
   rate        Int
   comment     String
-  merchant_id String @db.Uuid
+  merchant_id String
 
   photo_url  String? // [null] => opsional
   created_at DateTime @default(now())
@@ -121,10 +121,11 @@ model merchant_rating {
 }
 
 model stocks {
-  id          String @id @default(uuid()) @db.Uuid
-  user_id     String @db.Uuid
-  merchant_id String @db.Uuid
+  id          String  @id @default(uuid())
+  user_id     String
+  merchant_id String
   name        String
+  description String?
   quantity    Int
   photo_url   String
   price       Int
@@ -138,15 +139,20 @@ model stocks {
 }
 
 model selled_stocks {
-  id          String @id @default(uuid()) @db.Uuid
-  stock_id    String @db.Uuid
+  id          String @id @default(uuid())
+  stock_id    String
   quantity    Int
   total_price Float
-  merchant_id String @db.Uuid
-  user_id     String @db.Uuid
-
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  merchant_id String
+  user_id     String
+  payment_id  String  // group identifier for a batch purchase (QR code reference)
+  status      String  @default("pending") // pending | completed
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
   // Relations
-  merchant   merchants @relation(fields: [merchant_id], references: [id])
+  merchant    merchants @relation(fields: [merchant_id], references: [id])
+
+  @@index([payment_id])
+  @@index([merchant_id])
+  @@index([status])
 }

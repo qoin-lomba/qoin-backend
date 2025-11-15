@@ -4,6 +4,8 @@ import {
   addMerchant,
   getMerchantById,
   addMerchantRating,
+  getAllMerchant,
+  getUserMerchant,
 } from "./merchant.controller";
 import { verifyToken } from "../../middleware/verifyToken";
 import { addMerchantSchema } from "./merchant.schema";
@@ -12,6 +14,8 @@ import { addMerchantRatingSchema } from "./merchant.schema";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
+
+router.get("/all-data", verifyToken, getAllMerchant);
 
 router.post(
   "/register",
@@ -25,7 +29,9 @@ router.post(
   addMerchant
 );
 
-router.get("/:merchant_id", verifyToken, getMerchantById);
+router.get("/user", verifyToken, getUserMerchant);
+
+router.get("/id/:merchant_id", getMerchantById);
 
 router.post(
   "/rating/:merchant_id",
@@ -34,5 +40,10 @@ router.post(
   validate(addMerchantRatingSchema, "body"),
   addMerchantRating
 );
+
+// Payments (grouped via selled_stocks only)
+// router.post("/payment", verifyToken, createPaymentGroup); // create group & pending rows
+// router.get("/payment/:payment_id", verifyToken, getPaymentGroup); // fetch pending/completed rows
+// router.post("/payment/:payment_id", verifyToken, finalizePaymentGroup); // finalize (mark completed & decrement stock)
 
 export default router;

@@ -4,6 +4,8 @@ import {
   addMerchantService,
   getMerchantByIdService,
   addMerchantRatingService,
+  getAllMerchantService,
+  getUserMerchantService,
 } from "./merchant.service";
 import { AuthRequest } from "../../middleware/verifyToken";
 import z from "zod";
@@ -72,7 +74,7 @@ export const addMerchant = async (
       galleryImages: galleryUrls,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Merchant added successfully",
       status: "success",
       data: merchant,
@@ -80,6 +82,26 @@ export const addMerchant = async (
   } catch (err) {
     console.error("[merchant.register] error:", err);
     next(err);
+  }
+};
+export const getAllMerchant = async (
+  req: AuthRequest,
+  res: Response<APIResponse>,
+  next: NextFunction
+) => {
+  try {
+    console.log("getting merchant...");
+
+    const dataMerchant = await getAllMerchantService();
+
+    return res.status(200).json({
+      message: "Merchant get successfully",
+      status: "success",
+      data: dataMerchant,
+    });
+  } catch (err) {
+    console.log("Error:", err);
+    return next(err); // <= tambahkan return agar request berhenti
   }
 };
 
@@ -90,7 +112,7 @@ export const getMerchantById = async (
 ) => {
   try {
     const { merchant_id } = req.params;
-    // console.log(merchant_id);
+    console.log(merchant_id);
     const merchant = await getMerchantByIdService(merchant_id);
 
     // console.log(merchant);
@@ -130,5 +152,25 @@ export const addMerchantRating = async (
     });
   } catch (err) {
     next(err);
+  }
+};
+
+export const getUserMerchant = async (
+  req: AuthRequest,
+  res: Response<APIResponse>,
+  next: NextFunction
+) => {
+  try {
+    const { user_id } = req.user as { user_id: string };
+    console.log(user_id);
+    const merchant = await getUserMerchantService(user_id);
+    return res.status(200).json({
+      status: "success",
+      message: "User merchant fetched successfully",
+      data: merchant,
+    });
+  } catch (err) {
+    console.log(err);
+    return next(err);
   }
 };
