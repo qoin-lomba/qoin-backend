@@ -1,6 +1,6 @@
 # 🚀 Qoin Frontend — Next.Js + TypeScript + React-Query - ShadCn
 
-Frontend ini dibangun menggunakan Next.js, TypeScript, React-Qurry - ShadCN
+Frontend ini dibangun menggunakan Next.js, TypeScript, React-Query - ShadCN
 
 ## 📦 Install & Setup
 
